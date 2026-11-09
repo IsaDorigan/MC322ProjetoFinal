@@ -1,9 +1,9 @@
-package src.main.java.organizaai.gerenciamento;
+package organizaai.gerenciamento;
 
-import src.main.java.organizaai.excecoes.ConflitoDeHorarioException;
-import src.main.java.organizaai.excecoes.DataInvalidaException;
-import src.main.java.organizaai.modelo.Atividade;
-import src.main.java.organizaai.modelo.EventoComHorario;
+import organizaai.excecoes.ConflitoDeHorarioException;
+import organizaai.excecoes.DataInvalidaException;
+import organizaai.modelo.Atividade;
+import organizaai.modelo.EventoComHorario;
 
 import java.time.LocalDate;
 import java.util.ArrayList;

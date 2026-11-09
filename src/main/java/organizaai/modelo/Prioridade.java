@@ -1,4 +1,4 @@
-package src.main.java.organizaai.modelo;
+package organizaai.modelo;
 
 /**
  * Representa os níveis de prioridade que uma atividade pode ter.

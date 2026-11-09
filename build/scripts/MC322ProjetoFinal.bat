@@ -78,7 +78,7 @@ set CLASSPATH=%APP_HOME%\lib\MC322ProjetoFinal.jar
 @rem Execute MC322ProjetoFinal
 @rem endlocal doesn't take effect until after the line is parsed and variables are expanded
 @rem which allows us to clear the local environment before executing the java command
-endlocal & "%JAVA_EXE%" %DEFAULT_JVM_OPTS% %JAVA_OPTS% %M_C322_PROJETO_FINAL_OPTS%  -classpath "%CLASSPATH%" Main %* & call :exitWithErrorLevel & goto exitWithErrorLevel
+endlocal & "%JAVA_EXE%" %DEFAULT_JVM_OPTS% %JAVA_OPTS% %M_C322_PROJETO_FINAL_OPTS%  -classpath "%CLASSPATH%" organizaai.Main %* & call :exitWithErrorLevel & goto exitWithErrorLevel
 
 @rem This label must not be changed. We rely on old scripts being able to jump to this point.
 :exitWithErrorLevel

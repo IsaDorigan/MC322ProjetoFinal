@@ -1,4 +1,4 @@
-package src.main.java.organizaai.modelo;
+package organizaai.modelo;
 
 import java.time.LocalDate;
 import java.time.LocalTime;

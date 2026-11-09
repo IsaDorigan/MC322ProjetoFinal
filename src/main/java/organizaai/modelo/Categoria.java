@@ -1,4 +1,4 @@
-package src.main.java.organizaai.modelo;
+package organizaai.modelo;
 
 /**
  * Representa as categorias disponíveis para classificar as atividades da agenda.

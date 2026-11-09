@@ -1,4 +1,4 @@
-package src.main.java.organizaai.excecoes;
+package organizaai.excecoes;
 
 /**
  * Exceção lançada quando há tentativa de agendar um EventoComHorario
