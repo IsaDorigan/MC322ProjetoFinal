@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="src.test.java.organizaai.testes.GerenciadorAgendaTest" tests="5" skipped="0" failures="0" errors="0" timestamp="2026-11-11T23:10:44.067Z" hostname="BOOK-HD9BSDUBQC" time="0.115">
+  <properties/>
+  <testcase name="testCadastrarTarefaComSucesso()" classname="src.test.java.organizaai.testes.GerenciadorAgendaTest" time="0.064"/>
+  <testcase name="testDataInvalidaException()" classname="src.test.java.organizaai.testes.GerenciadorAgendaTest" time="0.005"/>
+  <testcase name="testMarcarComoConcluida()" classname="src.test.java.organizaai.testes.GerenciadorAgendaTest" time="0.001"/>
+  <testcase name="testConflitoDeHorarioException()" classname="src.test.java.organizaai.testes.GerenciadorAgendaTest" time="0.004"/>
+  <testcase name="testExcluirAtividade()" classname="src.test.java.organizaai.testes.GerenciadorAgendaTest" time="0.007"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

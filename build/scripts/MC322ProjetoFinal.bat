@@ -72,7 +72,7 @@ goto exitWithErrorLevel
 :execute
 @rem Setup the command line
 
-set CLASSPATH=%APP_HOME%\lib\MC322ProjetoFinal.jar
+set CLASSPATH=%APP_HOME%\lib\MC322ProjetoFinal.jar;%APP_HOME%\lib\javafx-controls-17-win.jar;%APP_HOME%\lib\javafx-graphics-17-win.jar;%APP_HOME%\lib\javafx-base-17-win.jar
 
 
 @rem Execute MC322ProjetoFinal
