@@ -5,7 +5,7 @@ import java.util.Comparator;
 import java.util.List;
 
 /**
- * Estratégia concreta que agrupa as atividades ordenando-as 
+ * Estratégia que agrupa as atividades ordenando-as 
  * alfabeticamente pelo nome da categoria.
  */
 public class OrdenacaoPorCategoria implements EstrategiaOrdenacao {

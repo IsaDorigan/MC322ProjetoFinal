@@ -22,7 +22,6 @@ import java.util.List;
 
 /**
  * Classe responsável por ler e gravar as atividades da agenda em um arquivo XML local.
- * Cumpre o requisito de persistência de dados da Atividade 2.
  */
 public class GerenciadorArquivoXML {
 
@@ -60,7 +59,7 @@ public class GerenciadorArquivoXML {
                 criarElemento(doc, atividadeNode, "prioridade", atv.getPrioridade().name());
                 criarElemento(doc, atividadeNode, "concluida", String.valueOf(atv.isConcluida()));
 
-                // Atributos específicos do EventoComHorario
+                // Atributos especificos do EventoComHorario
                 if (atv instanceof EventoComHorario) {
                     EventoComHorario evento = (EventoComHorario) atv;
                     criarElemento(doc, atividadeNode, "horaInicio", evento.getHoraInicio().toString());
@@ -85,35 +84,45 @@ public class GerenciadorArquivoXML {
     }
 
     /**
-     * Faz a leitura automática do arquivo local reconstruindo os objetos Atividade.
+     * Faz a leitura automática do arquivo local reconstruindo os objetos Atividade
      * 
      * @param caminhoArquivo O nome/caminho do arquivo local.
      * @return A lista de atividades recuperada, ou uma lista vazia se o arquivo não existir.
      */
     public List<Atividade> carregarAgenda(String caminhoArquivo) {
+        // Cria uma lista para guardar as atividades
         List<Atividade> listaCarregada = new ArrayList<>();
+        // abre o arquivo usando o caminho recebido
         File arquivo = new File(caminhoArquivo);
 
-        // Se for a primeira vez que o usuário abre o app, o arquivo não existe
+        // Se o arquivo não existir, retorna a lista vazia
         if (!arquivo.exists()) {
             return listaCarregada; 
         }
 
+        // Tenta carregar a agenda
         try {
+            // Faz a leitura do arquivo XML
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
             Document doc = dBuilder.parse(arquivo);
             doc.getDocumentElement().normalize();
 
-            NodeList nList = doc.getElementsByTagName("atividade");
+            // Pega as atividades existentes no arquivo
+            NodeList atividades = doc.getElementsByTagName("atividade");
 
-            for (int temp = 0; temp < nList.getLength(); temp++) {
-                Node node = nList.item(temp);
+            // Percorre as atividades
+            for (int temp = 0; temp < atividades.getLength(); temp++) {
+                Node node = atividades.item(temp);
 
+                // Verifica se o elemento é uma atividade
                 if (node.getNodeType() == Node.ELEMENT_NODE) {
                     Element elemento = (Element) node;
+
+                    // Verifica o tipo da atividade
                     String tipo = elemento.getAttribute("tipo");
 
+                    // Le as informaç~oes da atividade
                     String id = lerElemento(elemento, "id");
                     String titulo = lerElemento(elemento, "titulo");
                     String descricao = lerElemento(elemento, "descricao");
@@ -122,6 +131,8 @@ public class GerenciadorArquivoXML {
                     Prioridade prioridade = Prioridade.valueOf(lerElemento(elemento, "prioridade"));
                     boolean concluida = Boolean.parseBoolean(lerElemento(elemento, "concluida"));
 
+
+                    // Cria a atividade de acordo com seu tipo
                     Atividade atividadeRecuperada = null;
 
                     // Polimorfismo na reconstrução
@@ -134,6 +145,7 @@ public class GerenciadorArquivoXML {
                         atividadeRecuperada = new EventoComHorario(titulo, descricao, data, horaInicio, horaFim, categoria, prioridade);
                     }
 
+                    // Se a atividade foi criada, adiciona na lista
                     if (atividadeRecuperada != null) {
                         atividadeRecuperada.setId(id); // Restaura o ID original
                         atividadeRecuperada.setConcluida(concluida);
@@ -142,13 +154,15 @@ public class GerenciadorArquivoXML {
                 }
             }
         } catch (Exception e) {
+            // Se der erro, chama um catch
             System.err.println("Erro ao carregar a agenda: " + e.getMessage());
         }
 
+        // retonra uma lista com as atividades que foram carregadas
         return listaCarregada;
     }
 
-    // --- MÉTODOS AUXILIARES PRIVADOS PARA FACILITAR A CRIAÇÃO DO XML ---
+
 
     private void criarElemento(Document doc, Element pai, String nome, String valor) {
         Element node = doc.createElement(nome);

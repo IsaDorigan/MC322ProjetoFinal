@@ -36,7 +36,7 @@ public class GerenciadorAgenda {
     }
 
     /**
-     * Altera dinamicamente o algoritmo de ordenação (Padrão Strategy).
+     * Altera o algoritmo de ordenação
      * 
      * @param estrategia A nova estratégia escolhida pelo usuário na interface.
      */
@@ -47,9 +47,9 @@ public class GerenciadorAgenda {
     /**
      * Retorna uma cópia da lista de atividades, aplicando o algoritmo 
      * de ordenação selecionado atualmente na estratégia.
-     * Retorna uma cópia para proteger a lista original de modificações externas indesejadas.
+     * Retorna uma copia para proteger a lista original de modificações externas não desejadas.
      * 
-     * @return Lista ordenada de objetos do tipo Atividade.
+     * @return Lista ordenada de objetos do tipo Atividade
      */
     public List<Atividade> obterAtividadesOrdenadas() {
         List<Atividade> copiaOrdenada = new ArrayList<>(this.listaAtividades);
@@ -62,11 +62,11 @@ public class GerenciadorAgenda {
     }
 
     /**
-     * Cadastra uma nova atividade na agenda após passar pelas validações de dados e horários.
+     * Cadastra uma nova atividade na agenda após passar pelas validações de dados e horarios.
      * 
      * @param atividade O objeto TarefaComPrazo ou EventoComHorario a ser adicionado.
      * @throws DataInvalidaException Se a data fornecida for no passado.
-     * @throws ConflitoDeHorarioException Se for um evento que choque com o horário de outro evento no mesmo dia.
+     * @throws ConflitoDeHorarioException Se for um evento que bate com o horário de outro evento no mesmo dia.
      */
     public void cadastrarAtividade(Atividade atividade) throws DataInvalidaException, ConflitoDeHorarioException {
         validarData(atividade.getData());
@@ -81,15 +81,15 @@ public class GerenciadorAgenda {
     /**
      * Remove uma atividade da agenda a partir do seu ID único.
      * 
-     * @param id O identificador único (UUID) da atividade.
-     * @return true se a atividade foi removida com sucesso, false caso contrário.
+     * @param id O identificador único da atividade.
+     * @return true se a atividade foi removida com sucesso, false caso contrário
      */
     public boolean excluirAtividade(String id) {
         return listaAtividades.removeIf(atv -> atv.getId().equals(id));
     }
 
     /**
-     * Altera o status de uma atividade específica para "concluída".
+     * Altera o status de uma atividade específica para concluída.
      * 
      * @param id O identificador único da atividade.
      */
@@ -103,7 +103,7 @@ public class GerenciadorAgenda {
     }
 
     /**
-     * Retorna a lista bruta de atividades sem ordenação forçada,
+     * Retorna a lista de atividades sem ordenação,
      * útil para processos internos como salvar os dados em arquivo XML.
      * 
      * @return Lista original contendo as atividades.
@@ -111,8 +111,6 @@ public class GerenciadorAgenda {
     public List<Atividade> getListaAtividades() {
         return listaAtividades;
     }
-
-    // Métodos privados de validação mantidos exatamente como antes...
 
     private void validarData(LocalDate data) throws DataInvalidaException {
         if (data.isBefore(LocalDate.now())) {

@@ -18,8 +18,8 @@ public class EventoComHorario extends Atividade {
      * @param titulo     Título do evento.
      * @param descricao  Descrição ou local do evento.
      * @param data       Data do evento.
-     * @param horaInicio Horário programado para o início.
-     * @param horaFim    Horário programado para o término.
+     * @param horaInicio Horário programado para o inicio
+     * @param horaFim    Horário programado para o termino.
      * @param categoria  Categoria do evento.
      * @param prioridade Prioridade do evento.
      */
@@ -46,7 +46,7 @@ public class EventoComHorario extends Atividade {
     /**
      * Retorna os detalhes formatados especificamente para um Evento.
      * 
-     * @return String com os dados do Evento, incluindo horários.
+     * @return String com os dados do evento, incluindo horários.
      */
     @Override
     public String exibirDetalhes() {

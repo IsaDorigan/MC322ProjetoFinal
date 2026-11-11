@@ -4,7 +4,7 @@ import organizaai.modelo.Atividade;
 import java.util.List;
 
 /**
- * Estratégia concreta que ordena as atividades com base no nível de urgência.
+ * Estratégia que ordena as atividades com base no nível de urgência.
  * Atividades com prioridade ALTA aparecerão no topo da lista.
  */
 public class OrdenacaoPorPrioridade implements EstrategiaOrdenacao {

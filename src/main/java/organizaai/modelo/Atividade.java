@@ -4,8 +4,8 @@ import java.time.LocalDate;
 import java.util.UUID;
 
 /**
- * Classe abstrata que representa a estrutura base de qualquer compromisso na agenda.
- * Define os atributos comuns e a obrigatoriedade de implementação de métodos específicos.
+ * Classe que representa a estrutura base de qualquer compromisso na agenda.
+ * Define os atributos comuns e a obrigatoriedade de implementação de metodos específicos
  */
 public abstract class Atividade {
     
@@ -18,7 +18,7 @@ public abstract class Atividade {
     private boolean concluida;
 
     /**
-     * Construtor padrão para inicializar uma Atividade genérica.
+     * Construtor para inicializar uma atividade genérica.
      * O ID é gerado automaticamente para garantir a unicidade no sistema.
      * 
      * @param titulo     O título descritivo da atividade.
@@ -94,8 +94,7 @@ public abstract class Atividade {
     public abstract String exibirDetalhes();
 
     /**
-     * Define o ID da atividade. Utilizado principalmente pelo gerenciador de 
-     * arquivos para reconstruir o objeto exatamente como estava salvo em disco.
+     * Define o ID da atividade
      * 
      * @param id O identificador único recuperado do arquivo.
      */

@@ -1,13 +1,13 @@
 package organizaai.excecoes;
 
 /**
- * Exceção lançada quando há tentativa de agendar um EventoComHorario
- * em um intervalo de tempo que conflita com outro evento já existente na agenda.
+ * Excecaoo lançada quando a tentativa de agendar um evento com horário
+ * em um intervalo de tempo que bate com outro evento já existente.
  */
 public class ConflitoDeHorarioException extends Exception {
     
     /**
-     * Constrói a exceção com uma mensagem detalhada do conflito.
+     * Constroi a exceção com uma mensagem sobre o conflito.
      * 
      * @param mensagem A descrição do choque de horários.
      */
