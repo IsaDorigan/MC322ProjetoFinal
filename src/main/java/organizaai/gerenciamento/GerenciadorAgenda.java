@@ -4,6 +4,9 @@ import organizaai.excecoes.ConflitoDeHorarioException;
 import organizaai.excecoes.DataInvalidaException;
 import organizaai.modelo.Atividade;
 import organizaai.modelo.EventoComHorario;
+import organizaai.strategy.EstrategiaOrdenacao;
+import organizaai.strategy.OrdenacaoPorData;
+import organizaai.persistencia.GerenciadorArquivoXML;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -11,18 +14,51 @@ import java.util.List;
 
 /**
  * Classe responsável por gerenciar a lista de atividades da agenda.
- * Atua como a controladora principal, interligando a interface gráfica (futura) 
- * com as regras de negócio, exceções e o modelo de dados.
+ * Atua como a controladora principal, interligando a interface gráfica 
+ * com as regras de negócio, exceções, modelo de dados e padrões de projeto (Strategy).
  */
 public class GerenciadorAgenda {
     
     private List<Atividade> listaAtividades;
+    private EstrategiaOrdenacao estrategiaOrdenacao;
+
+    private GerenciadorArquivoXML gerenciadorArquivo;
+    private final String CAMINHO_ARQUIVO = "meus_dados_agenda.xml";
 
     /**
-     * Inicializa o gerenciador com uma lista vazia de atividades prontas para uso.
+     * Inicializa o gerenciador com uma lista vazia e define a ordenação 
+     * por data como o comportamento padrão do sistema.
      */
     public GerenciadorAgenda() {
-        this.listaAtividades = new ArrayList<>();
+        this.gerenciadorArquivo = new GerenciadorArquivoXML();
+        this.estrategiaOrdenacao = new OrdenacaoPorData(); 
+        this.listaAtividades = gerenciadorArquivo.carregarAgenda(CAMINHO_ARQUIVO);
+    }
+
+    /**
+     * Altera dinamicamente o algoritmo de ordenação (Padrão Strategy).
+     * 
+     * @param estrategia A nova estratégia escolhida pelo usuário na interface.
+     */
+    public void setEstrategiaOrdenacao(EstrategiaOrdenacao estrategia) {
+        this.estrategiaOrdenacao = estrategia;
+    }
+
+    /**
+     * Retorna uma cópia da lista de atividades, aplicando o algoritmo 
+     * de ordenação selecionado atualmente na estratégia.
+     * Retorna uma cópia para proteger a lista original de modificações externas indesejadas.
+     * 
+     * @return Lista ordenada de objetos do tipo Atividade.
+     */
+    public List<Atividade> obterAtividadesOrdenadas() {
+        List<Atividade> copiaOrdenada = new ArrayList<>(this.listaAtividades);
+        
+        if (this.estrategiaOrdenacao != null) {
+            this.estrategiaOrdenacao.ordenar(copiaOrdenada);
+        }
+        
+        return copiaOrdenada;
     }
 
     /**
@@ -43,10 +79,10 @@ public class GerenciadorAgenda {
     }
 
     /**
-     * Remove uma atividade da agenda a partir do seu ID único gerado no momento da criação.
+     * Remove uma atividade da agenda a partir do seu ID único.
      * 
      * @param id O identificador único (UUID) da atividade.
-     * @return true se a atividade foi encontrada e removida com sucesso, false caso contrário.
+     * @return true se a atividade foi removida com sucesso, false caso contrário.
      */
     public boolean excluirAtividade(String id) {
         return listaAtividades.removeIf(atv -> atv.getId().equals(id));
@@ -54,7 +90,6 @@ public class GerenciadorAgenda {
 
     /**
      * Altera o status de uma atividade específica para "concluída".
-     * Facilita o filtro visual sem precisar apagar o histórico do usuário.
      * 
      * @param id O identificador único da atividade.
      */
@@ -68,42 +103,29 @@ public class GerenciadorAgenda {
     }
 
     /**
-     * Retorna a lista completa de atividades salvas atualmente na memória.
+     * Retorna a lista bruta de atividades sem ordenação forçada,
+     * útil para processos internos como salvar os dados em arquivo XML.
      * 
-     * @return Lista contendo objetos do tipo Atividade (Tarefas e Eventos).
+     * @return Lista original contendo as atividades.
      */
     public List<Atividade> getListaAtividades() {
         return listaAtividades;
     }
 
-    /**
-     * Valida se a data fornecida é igual ou posterior à data atual do sistema.
-     * 
-     * @param data A data a ser verificada.
-     * @throws DataInvalidaException Se a data for estritamente anterior ao dia de hoje.
-     */
+    // Métodos privados de validação mantidos exatamente como antes...
+
     private void validarData(LocalDate data) throws DataInvalidaException {
         if (data.isBefore(LocalDate.now())) {
             throw new DataInvalidaException("Não é possível agendar uma atividade em uma data no passado.");
         }
     }
 
-    /**
-     * Valida se o novo evento entra em conflito de horário com algum evento já existente na mesma data.
-     * 
-     * @param novoEvento O evento que o usuário está tentando agendar.
-     * @throws ConflitoDeHorarioException Se o horário coincidir ou sobrepor outro evento do mesmo dia.
-     */
     private void validarConflitoDeHorario(EventoComHorario novoEvento) throws ConflitoDeHorarioException {
         for (Atividade atv : listaAtividades) {
             if (atv instanceof EventoComHorario) {
                 EventoComHorario eventoExistente = (EventoComHorario) atv;
                 
-                // Checa se os eventos estão marcados para o mesmo dia
                 if (eventoExistente.getData().equals(novoEvento.getData())) {
-                    
-                    // Lógica de intersecção temporal: 
-                    // Se o Início de A é antes do Fim de B, E o Fim de A é depois do Início de B = Conflito
                     boolean temConflito = novoEvento.getHoraInicio().isBefore(eventoExistente.getHoraFim()) &&
                                           novoEvento.getHoraFim().isAfter(eventoExistente.getHoraInicio());
                                           
@@ -115,5 +137,13 @@ public class GerenciadorAgenda {
                 }
             }
         }
+    }
+
+    /**
+     * Aciona o módulo de persistência para varrer a lista atual 
+     * e gravar as informações no arquivo XML local.
+     */
+    public void salvarDados() {
+        gerenciadorArquivo.salvarAgenda(this.listaAtividades, CAMINHO_ARQUIVO);
     }
 }

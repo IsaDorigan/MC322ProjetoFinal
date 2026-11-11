@@ -39,25 +39,51 @@ public abstract class Atividade {
 
     // Getters e Setters
 
-    public String getId() { return id; }
+    public String getId() { 
+        return id; 
+    }
     
-    public String getTitulo() { return titulo; }
-    public void setTitulo(String titulo) { this.titulo = titulo; }
+    public String getTitulo() { 
+        return titulo; 
+    }
+    public void setTitulo(String titulo) { 
+        this.titulo = titulo; 
+    }
     
-    public String getDescricao() { return descricao; }
-    public void setDescricao(String descricao) { this.descricao = descricao; }
+    public String getDescricao() { 
+        return descricao; 
+    }
+    public void setDescricao(String descricao) { 
+        this.descricao = descricao; 
+    }
     
-    public LocalDate getData() { return data; }
-    public void setData(LocalDate data) { this.data = data; }
+    public LocalDate getData() { 
+        return data; 
+    }
+    public void setData(LocalDate data) { 
+        this.data = data; 
+    }
     
-    public Categoria getCategoria() { return categoria; }
-    public void setCategoria(Categoria categoria) { this.categoria = categoria; }
+    public Categoria getCategoria() { 
+        return categoria; 
+    }
+    public void setCategoria(Categoria categoria) { 
+        this.categoria = categoria; 
+    }
     
-    public Prioridade getPrioridade() { return prioridade; }
-    public void setPrioridade(Prioridade prioridade) { this.prioridade = prioridade; }
+    public Prioridade getPrioridade() { 
+        return prioridade; 
+    }
+    public void setPrioridade(Prioridade prioridade) { 
+        this.prioridade = prioridade; 
+    }
     
-    public boolean isConcluida() { return concluida; }
-    public void setConcluida(boolean concluida) { this.concluida = concluida; }
+    public boolean isConcluida() { 
+        return concluida; 
+    }
+    public void setConcluida(boolean concluida) { 
+        this.concluida = concluida; 
+    }
 
     /**
      * Método abstrato para exibir os detalhes específicos da atividade.
@@ -66,4 +92,15 @@ public abstract class Atividade {
      * @return String formatada com os dados da atividade.
      */
     public abstract String exibirDetalhes();
+
+    /**
+     * Define o ID da atividade. Utilizado principalmente pelo gerenciador de 
+     * arquivos para reconstruir o objeto exatamente como estava salvo em disco.
+     * 
+     * @param id O identificador único recuperado do arquivo.
+     */
+    public void setId(String id) {
+        this.id = id;
+    }
+
 }

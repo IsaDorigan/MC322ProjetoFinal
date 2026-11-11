@@ -29,11 +29,19 @@ public class EventoComHorario extends Atividade {
         this.horaFim = horaFim;
     }
 
-    public LocalTime getHoraInicio() { return horaInicio; }
-    public void setHoraInicio(LocalTime horaInicio) { this.horaInicio = horaInicio; }
+    public LocalTime getHoraInicio() { 
+        return horaInicio; 
+    }
+    public void setHoraInicio(LocalTime horaInicio) { 
+        this.horaInicio = horaInicio; 
+    }
 
-    public LocalTime getHoraFim() { return horaFim; }
-    public void setHoraFim(LocalTime horaFim) { this.horaFim = horaFim; }
+    public LocalTime getHoraFim() { 
+        return horaFim; 
+    }
+    public void setHoraFim(LocalTime horaFim) { 
+        this.horaFim = horaFim; 
+    }
 
     /**
      * Retorna os detalhes formatados especificamente para um Evento.

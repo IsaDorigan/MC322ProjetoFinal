@@ -7,10 +7,8 @@ package organizaai.modelo;
 public enum Prioridade {
     /** Prioridade baixa, para atividades não urgentes. */
     BAIXA,
-    
     /** Prioridade média, para atividades de importância padrão. */
     MEDIA,
-    
     /** Prioridade alta, para atividades urgentes ou críticas. */
     ALTA
 }
