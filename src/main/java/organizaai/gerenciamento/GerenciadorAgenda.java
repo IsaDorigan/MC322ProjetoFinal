@@ -4,6 +4,7 @@ import organizaai.excecoes.ConflitoDeHorarioException;
 import organizaai.excecoes.DataInvalidaException;
 import organizaai.modelo.Atividade;
 import organizaai.modelo.EventoComHorario;
+import organizaai.modelo.Status;
 import organizaai.strategy.EstrategiaOrdenacao;
 import organizaai.strategy.OrdenacaoPorData;
 import organizaai.persistencia.GerenciadorArquivoXML;
@@ -96,7 +97,7 @@ public class GerenciadorAgenda {
     public void marcarComoConcluida(String id) {
         for (Atividade atv : listaAtividades) {
             if (atv.getId().equals(id)) {
-                atv.setConcluida(true);
+                atv.setStatus(Status.CONCLUIDA);
                 break;
             }
         }

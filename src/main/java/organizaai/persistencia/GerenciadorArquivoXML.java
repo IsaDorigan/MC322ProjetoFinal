@@ -57,7 +57,7 @@ public class GerenciadorArquivoXML {
                 criarElemento(doc, atividadeNode, "data", atv.getData().toString());
                 criarElemento(doc, atividadeNode, "categoria", atv.getCategoria().name());
                 criarElemento(doc, atividadeNode, "prioridade", atv.getPrioridade().name());
-                criarElemento(doc, atividadeNode, "concluida", String.valueOf(atv.isConcluida()));
+                criarElemento(doc, atividadeNode, "status", String.valueOf(atv.getStatus().name()));
 
                 // Atributos especificos do EventoComHorario
                 if (atv instanceof EventoComHorario) {
@@ -129,7 +129,7 @@ public class GerenciadorArquivoXML {
                     LocalDate data = LocalDate.parse(lerElemento(elemento, "data"));
                     Categoria categoria = Categoria.valueOf(lerElemento(elemento, "categoria"));
                     Prioridade prioridade = Prioridade.valueOf(lerElemento(elemento, "prioridade"));
-                    boolean concluida = Boolean.parseBoolean(lerElemento(elemento, "concluida"));
+                    Status status = Status.valueOf(lerElemento(elemento, "status"));
 
 
                     // Cria a atividade de acordo com seu tipo
@@ -137,18 +137,18 @@ public class GerenciadorArquivoXML {
 
                     // Polimorfismo na reconstrução
                     if (tipo.equals("TarefaComPrazo")) {
-                        atividadeRecuperada = new TarefaComPrazo(titulo, descricao, data, categoria, prioridade);
+                        atividadeRecuperada = new TarefaComPrazo(titulo, descricao, data, categoria, prioridade, status);
                         
                     } else if (tipo.equals("EventoComHorario")) {
                         LocalTime horaInicio = LocalTime.parse(lerElemento(elemento, "horaInicio"));
                         LocalTime horaFim = LocalTime.parse(lerElemento(elemento, "horaFim"));
-                        atividadeRecuperada = new EventoComHorario(titulo, descricao, data, horaInicio, horaFim, categoria, prioridade);
+                        atividadeRecuperada = new EventoComHorario(titulo, descricao, data, horaInicio, horaFim, categoria, prioridade, status);
                     }
 
                     // Se a atividade foi criada, adiciona na lista
                     if (atividadeRecuperada != null) {
                         atividadeRecuperada.setId(id); // Restaura o ID original
-                        atividadeRecuperada.setConcluida(concluida);
+                        atividadeRecuperada.setStatus(status);
                         listaCarregada.add(atividadeRecuperada);
                     }
                 }

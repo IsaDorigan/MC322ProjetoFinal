@@ -82,7 +82,7 @@ public abstract class Atividade {
     public Status getStatus() { 
         return status; 
     }
-    public void setConcluida(Status status) { 
+    public void setStatus(Status status) { 
         this.status = status; 
     }
 
