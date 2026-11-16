@@ -13,6 +13,7 @@ import organizaai.modelo.Categoria;
 import organizaai.modelo.EventoComHorario;
 import organizaai.modelo.Prioridade;
 import organizaai.modelo.TarefaComPrazo;
+import organizaai.modelo.Status;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -111,7 +112,7 @@ public class TelaCadastroAtividade {
                 if (comboTipo.getValue().equals("Tarefa com Prazo")) {
                     TarefaComPrazo novaTarefa = new TarefaComPrazo(
                             txtTitulo.getText(), txtDescricao.getText(), dpData.getValue(), 
-                            comboCategoria.getValue(), comboPrioridade.getValue()
+                            comboCategoria.getValue(), comboPrioridade.getValue(), Status.PENDENTE
                     );
                     gerenciador.cadastrarAtividade(novaTarefa); // Pode lançar DataInvalidaException
 
@@ -121,7 +122,7 @@ public class TelaCadastroAtividade {
 
                     EventoComHorario novoEvento = new EventoComHorario(
                             txtTitulo.getText(), txtDescricao.getText(), dpData.getValue(),
-                            hrInicio, hrFim, comboCategoria.getValue(), comboPrioridade.getValue()
+                            hrInicio, hrFim, comboCategoria.getValue(), comboPrioridade.getValue(), Status.PENDENTE
                     );
                     gerenciador.cadastrarAtividade(novoEvento); // Pode lançar Data/Conflito Exceptions
                 }

@@ -5,7 +5,6 @@ import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
 import organizaai.gerenciamento.GerenciadorAgenda;
 import organizaai.modelo.Atividade;
 import organizaai.strategy.OrdenacaoPorCategoria;

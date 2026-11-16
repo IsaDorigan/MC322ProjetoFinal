@@ -1,4 +1,4 @@
-package src.test.java.organizaai.testes;
+package organizaai.testes;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -9,6 +9,7 @@ import organizaai.modelo.Categoria;
 import organizaai.modelo.EventoComHorario;
 import organizaai.modelo.Prioridade;
 import organizaai.modelo.TarefaComPrazo;
+import organizaai.modelo.Status;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -48,7 +49,8 @@ public class GerenciadorAgendaTest {
                     "Fazer o push da release no GitHub",
                     dataFutura,
                     Categoria.FACULDADE,
-                    Prioridade.ALTA
+                    Prioridade.ALTA,
+                    Status.PENDENTE
             );
 
             // Cadastra a tarefa no gerenciador
@@ -82,7 +84,8 @@ public class GerenciadorAgendaTest {
                 "Esta tarefa deve falhar ao salvar", 
                 dataPassada, 
                 Categoria.PESSOAL, 
-                Prioridade.BAIXA
+                Prioridade.BAIXA,
+                Status.PENDENTE
         );
 
         // O assertThrows verifica se o método lança exatamente a DataInvalidaException
@@ -107,14 +110,14 @@ public class GerenciadorAgendaTest {
         EventoComHorario evento1 = new EventoComHorario(
                 "Reunião de Grupo", "Discussão do Projeto", data,
                 LocalTime.of(14, 0), LocalTime.of(16, 0),
-                Categoria.FACULDADE, Prioridade.ALTA
+                Categoria.FACULDADE, Prioridade.ALTA, Status.PENDENTE
         );
 
         // Segundo evento: das 15:00 às 17:00 (Sobrepõe o evento 1 em 1 hora)
         EventoComHorario evento2 = new EventoComHorario(
                 "Consultoria CCU", "Workshop", data,
                 LocalTime.of(15, 0), LocalTime.of(17, 0),
-                Categoria.TRABALHO, Prioridade.MEDIA
+                Categoria.TRABALHO, Prioridade.MEDIA, Status.PENDENTE
         );
 
         // O primeiro evento deve ser cadastrado sem problemas
@@ -136,7 +139,8 @@ public class GerenciadorAgendaTest {
     public void testMarcarComoConcluida() throws Exception {
         LocalDate data = LocalDate.now().plusDays(1);
         TarefaComPrazo tarefa = new TarefaComPrazo(
-                "Comprar presente", "Shopping", data, Categoria.PESSOAL, Prioridade.MEDIA
+                "Comprar presente", "Shopping", data, 
+                Categoria.PESSOAL, Prioridade.MEDIA, Status.PENDENTE
         );
         
         gerenciador.cadastrarAtividade(tarefa);
@@ -148,7 +152,8 @@ public class GerenciadorAgendaTest {
         gerenciador.marcarComoConcluida(idGerado);
 
         // Afirma que o status da atividade mudou de false para true
-        assertTrue(gerenciador.getListaAtividades().get(0).isConcluida(), "A atividade deveria estar marcada como concluída (true).");
+        assertEquals(Status.CONCLUIDA, gerenciador.getListaAtividades().get(0).getStatus(),
+                    "A atividade deveria estar marcada como concluída (true).");
     }
 
     /**
@@ -158,7 +163,8 @@ public class GerenciadorAgendaTest {
     public void testExcluirAtividade() throws Exception {
         LocalDate data = LocalDate.now().plusDays(1);
         TarefaComPrazo tarefa = new TarefaComPrazo(
-                "Estudar Microcontroladores", "Revisar STM32", data, Categoria.FACULDADE, Prioridade.ALTA
+                "Estudar Microcontroladores", "Revisar STM32", data,
+                Categoria.FACULDADE, Prioridade.ALTA, Status.PENDENTE
         );
         
         gerenciador.cadastrarAtividade(tarefa);
