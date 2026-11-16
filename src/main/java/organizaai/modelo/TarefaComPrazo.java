@@ -16,9 +16,18 @@ public class TarefaComPrazo extends Atividade {
      * @param prazo      A data limite (prazo final) da tarefa.
      * @param categoria  A categoria relacionada.
      * @param prioridade O nível de prioridade.
+     * @param status     O status da tarefa.
      */
-    public TarefaComPrazo(String titulo, String descricao, LocalDate prazo, Categoria categoria, Prioridade prioridade) {
-        super(titulo, descricao, prazo, categoria, prioridade);
+    public TarefaComPrazo(String titulo, String descricao, LocalDate prazo, Categoria categoria, Prioridade prioridade, Status status) {
+        super(titulo, descricao, prazo, categoria, prioridade, status);
+    }
+
+    /**
+     * Verifica se a tarefa está atrasada e não foi concluída ainda
+     * @return true se tiver em atraso, false caso contrário
+     */
+    public boolean estaEmAtraso(){
+        return LocalDate.now().isAfter(getData()) && getStatus() != Status.CONCLUIDA;
     }
 
     /**
@@ -28,7 +37,9 @@ public class TarefaComPrazo extends Atividade {
      */
     @Override
     public String exibirDetalhes() {
+
+        Status statusExibido = estaEmAtraso()? Status.EM_ATRASO : getStatus();
         return String.format("[TAREFA] %s - Prazo: %s | Prioridade: %s | Status: %s", 
-                getTitulo(), getData().toString(), getPrioridade(), isConcluida() ? "Concluída" : "Pendente");
+                getTitulo(), getData().toString(), getPrioridade(), statusExibido);
     }
 }

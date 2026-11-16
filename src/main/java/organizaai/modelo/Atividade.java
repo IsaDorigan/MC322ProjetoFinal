@@ -15,7 +15,7 @@ public abstract class Atividade {
     private LocalDate data;
     private Categoria categoria;
     private Prioridade prioridade;
-    private boolean concluida;
+    private Status status;
 
     /**
      * Construtor para inicializar uma atividade genérica.
@@ -23,18 +23,19 @@ public abstract class Atividade {
      * 
      * @param titulo     O título descritivo da atividade.
      * @param descricao  Os detalhes ou anotações da atividade.
-     * @param data       A data em que a atividade ocorrerá ou deverá ser entregue.
+     * @param data       A data em que a atividade ocorrerá ou deverá ser entregue. Formato: (ano-mês-dia)
      * @param categoria  A classificação da atividade (Pessoal, Faculdade, etc).
      * @param prioridade O nível de urgência (Baixa, Média, Alta).
+     * @param status     O status da atividade (Pendente, Em andamento, Concluída, Em atraso)
      */
-    public Atividade(String titulo, String descricao, LocalDate data, Categoria categoria, Prioridade prioridade) {
+    public Atividade(String titulo, String descricao, LocalDate data, Categoria categoria, Prioridade prioridade, Status status) {
         this.id = UUID.randomUUID().toString();
         this.titulo = titulo;
         this.descricao = descricao;
         this.data = data;
         this.categoria = categoria;
         this.prioridade = prioridade;
-        this.concluida = false; // Toda atividade nasce como pendente
+        this.status = status; // Toda atividade nasce como pendente
     }
 
     // Getters e Setters
@@ -78,11 +79,11 @@ public abstract class Atividade {
         this.prioridade = prioridade; 
     }
     
-    public boolean isConcluida() { 
-        return concluida; 
+    public Status getStatus() { 
+        return status; 
     }
-    public void setConcluida(boolean concluida) { 
-        this.concluida = concluida; 
+    public void setConcluida(Status status) { 
+        this.status = status; 
     }
 
     /**

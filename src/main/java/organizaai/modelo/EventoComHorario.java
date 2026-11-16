@@ -22,9 +22,10 @@ public class EventoComHorario extends Atividade {
      * @param horaFim    Horário programado para o termino.
      * @param categoria  Categoria do evento.
      * @param prioridade Prioridade do evento.
+     * @param status     Status do evento.
      */
-    public EventoComHorario(String titulo, String descricao, LocalDate data, LocalTime horaInicio, LocalTime horaFim, Categoria categoria, Prioridade prioridade) {
-        super(titulo, descricao, data, categoria, prioridade);
+    public EventoComHorario(String titulo, String descricao, LocalDate data, LocalTime horaInicio, LocalTime horaFim, Categoria categoria, Prioridade prioridade, Status status) {
+        super(titulo, descricao, data, categoria, prioridade, status);
         this.horaInicio = horaInicio;
         this.horaFim = horaFim;
     }
@@ -50,7 +51,7 @@ public class EventoComHorario extends Atividade {
      */
     @Override
     public String exibirDetalhes() {
-        return String.format("[EVENTO] %s - %s das %s às %s | Categoria: %s", 
-                getTitulo(), getData().toString(), horaInicio.toString(), horaFim.toString(), getCategoria());
+        return String.format("[EVENTO] %s - %s das %s às %s | Categoria: %s | Status: %s", 
+                getTitulo(), getData().toString(), horaInicio.toString(), horaFim.toString(), getCategoria(), getStatus());
     }
 }
