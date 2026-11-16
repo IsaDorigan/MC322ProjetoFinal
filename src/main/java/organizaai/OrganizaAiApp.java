@@ -27,8 +27,11 @@ public class OrganizaAiApp extends Application {
         // Cria a interface principal
         TelaPrincipal telaPrincipal = new TelaPrincipal(gerenciador);
         
-        Scene scene = new Scene(telaPrincipal.getRoot(), 800, 600);
-        
+        Scene scene = new Scene(telaPrincipal.getRoot(), 1100, 720);
+        scene.getStylesheets().add(TelaPrincipal.caminhoCss());
+
+        primaryStage.setMinWidth(900);
+        primaryStage.setMinHeight(600);
         primaryStage.setTitle("OrganizaAí - Agenda Pessoal");
         primaryStage.setScene(scene);
         primaryStage.show();

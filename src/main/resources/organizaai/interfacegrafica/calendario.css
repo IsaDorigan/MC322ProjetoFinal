@@ -1,0 +1,140 @@
+/* ===== Base ===== */
+.root {
+    -fx-font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    -fx-font-size: 13px;
+    -fx-background-color: white;
+}
+
+/* ===== Barra superior ===== */
+.barra-topo { -fx-padding: 0 0 12 0; }
+
+.titulo-periodo {
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-padding: 0 0 0 10;
+}
+
+.botao-principal {
+    -fx-background-color: #1a73e8;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 4;
+    -fx-cursor: hand;
+}
+.botao-principal:hover { -fx-background-color: #1765cc; }
+
+.botao-perigo { -fx-text-fill: #d93025; }
+
+/* Botões Mês / Semana / Dia */
+.toggle-button {
+    -fx-background-color: white;
+    -fx-border-color: #dadce0;
+    -fx-background-radius: 0;
+    -fx-border-radius: 0;
+}
+.toggle-button:selected {
+    -fx-background-color: #e8f0fe;
+    -fx-text-fill: #1a73e8;
+    -fx-font-weight: bold;
+}
+
+/* ===== Grade do calendário ===== */
+.area-calendario,
+.area-calendario > .viewport {
+    -fx-background-color: transparent;
+}
+.area-calendario {
+    -fx-padding: 0;
+    -fx-background-insets: 0;
+}
+
+.grade-calendario { -fx-border-color: #dadce0; -fx-border-width: 1 0 0 1; }
+
+.cabecalho-dia-semana {
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #70757a;
+    -fx-padding: 6 0 6 0;
+    -fx-border-color: #dadce0;
+    -fx-border-width: 0 1 1 0;
+}
+
+/* Célula de um dia */
+.celula-dia {
+    -fx-padding: 4;
+    -fx-background-color: white;
+    -fx-border-color: #dadce0;
+    -fx-border-width: 0 1 1 0;
+}
+.celula-dia:hover { -fx-background-color: #f8f9fa; }
+.celula-dia.hoje { -fx-background-color: #f1f6fe; }
+.celula-dia.passado,
+.celula-dia.passado:hover { -fx-background-color: #fafafa; }
+.celula-dia.outro-mes .numero-dia,
+.celula-dia.passado .numero-dia { -fx-text-fill: #9aa0a6; }
+
+/* Número do dia */
+.numero-dia {
+    -fx-font-size: 12px;
+    -fx-padding: 2 6 2 6;
+    -fx-cursor: hand;
+}
+.numero-dia:hover {
+    -fx-background-color: #e8eaed;
+    -fx-background-radius: 12;
+}
+.numero-dia-hoje {
+    -fx-background-color: #1a73e8;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 12;
+    -fx-min-width: 24;
+    -fx-min-height: 24;
+    -fx-alignment: center;
+}
+.numero-dia-hoje:hover { -fx-background-color: #1765cc; }
+.celula-dia.outro-mes .numero-dia.numero-dia-hoje { -fx-text-fill: white; }
+
+/* ===== Etiquetas das atividades (cor = categoria) ===== */
+.etiqueta {
+    -fx-text-fill: white;
+    -fx-font-size: 11px;
+    -fx-padding: 1 6 1 6;
+    -fx-background-radius: 4;
+    -fx-cursor: hand;
+}
+.etiqueta:hover { -fx-opacity: 0.85; }
+
+.etiqueta-pessoal   { -fx-background-color: #8e24aa; } /* roxo    */
+.etiqueta-faculdade { -fx-background-color: #1a73e8; } /* azul    */
+.etiqueta-trabalho  { -fx-background-color: #e37400; } /* laranja */
+.etiqueta-saude     { -fx-background-color: #188038; } /* verde   */
+
+/* Modificadores de status */
+.etiqueta.concluida { -fx-opacity: 0.5; }
+.etiqueta.atrasada {
+    -fx-border-color: #d93025;
+    -fx-border-width: 2;
+    -fx-border-radius: 4;
+}
+
+/* Etiqueta grande (visão Dia) */
+.etiqueta-detalhada {
+    -fx-font-size: 13px;
+    -fx-padding: 6 10 6 10;
+}
+
+/* Link "+ N mais" */
+.mais {
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #5f6368;
+    -fx-padding: 1 4 1 4;
+    -fx-cursor: hand;
+}
+.mais:hover { -fx-underline: true; }
+
+/* ===== Visão Dia e janela de detalhes ===== */
+.painel-dia { -fx-padding: 12; }
+.detalhe-titulo { -fx-font-size: 18px; -fx-font-weight: bold; }
+.detalhe-rotulo { -fx-text-fill: #5f6368; -fx-font-weight: bold; }

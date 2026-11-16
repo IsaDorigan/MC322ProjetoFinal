@@ -27,16 +27,27 @@ public class TelaCadastroAtividade {
     private GerenciadorAgenda gerenciador;
     private TelaPrincipal telaPrincipal;
     private Stage stage;
+    private LocalDate dataInicial;
 
     /**
-     * Construtor da tela  de cadastro.
+     * Abre o cadastro com a data de hoje
+     * @param gerenciador
+     * @param telaPrincipal
+     */
+    public TelaCadastroAtividade(GerenciadorAgenda gerenciador, TelaPrincipal telaPrincipal){
+        this(gerenciador, telaPrincipal, LocalDate.now());
+    }
+
+    /**
+     * Construtor da tela de cadastro já com a data escolhida
      * 
      * @param gerenciador A instância central para salvar a nova atividade.
      * @param telaPrincipal A janela principal, para forçar a atualização da lista após o cadastro.
      */
-    public TelaCadastroAtividade(GerenciadorAgenda gerenciador, TelaPrincipal telaPrincipal) {
+    public TelaCadastroAtividade(GerenciadorAgenda gerenciador, TelaPrincipal telaPrincipal, LocalDate dataInicial) {
         this.gerenciador = gerenciador;
         this.telaPrincipal = telaPrincipal;
+        this.dataInicial = dataInicial;
         this.stage = new Stage();
         stage.initModality(Modality.APPLICATION_MODAL); // Impede clicar na tela de trás enquanto esta estiver aberta
         stage.setTitle("Cadastrar Nova Atividade");
@@ -58,7 +69,7 @@ public class TelaCadastroAtividade {
 
         TextField txtTitulo = new TextField();
         TextField txtDescricao = new TextField();
-        DatePicker dpData = new DatePicker(LocalDate.now());
+        DatePicker dpData = new DatePicker(dataInicial);
         
         ComboBox<Categoria> comboCategoria = new ComboBox<>();
         comboCategoria.getItems().addAll(Categoria.values());
@@ -105,6 +116,10 @@ public class TelaCadastroAtividade {
                 // Valida preenchimento
                 if (txtTitulo.getText().trim().isEmpty()) {
                     mostrarErro("O título não pode estar vazio.");
+                    return;
+                }
+                if (dpData.getValue() == null) {
+                    mostrarErro("Escolha uma data.");
                     return;
                 }
 
