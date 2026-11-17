@@ -87,6 +87,16 @@ public abstract class Atividade {
     }
 
     /**
+     * Verifica se a atividade está atrasada: a data (prazo da tarefa ou dia do evento)
+     * já passou e a atividade não foi concluída.
+     *
+     * @return true se estiver em atraso, false caso contrário
+     */
+    public boolean estaEmAtraso() {
+        return status != Status.CONCLUIDA && LocalDate.now().isAfter(data);
+    }
+
+    /**
      * Método abstrato para exibir os detalhes específicos da atividade.
      * O polimorfismo garantirá que Tarefas e Eventos sejam exibidos da maneira correta.
      * 
