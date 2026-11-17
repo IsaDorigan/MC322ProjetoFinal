@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import organizaai.excecoes.ConflitoDeHorarioException;
 import organizaai.excecoes.DataInvalidaException;
 import organizaai.gerenciamento.GerenciadorAgenda;
+import organizaai.modelo.Atividade;
 import organizaai.modelo.Categoria;
 import organizaai.modelo.EventoComHorario;
 import organizaai.modelo.Prioridade;
@@ -133,10 +134,10 @@ public class GerenciadorAgendaTest {
     }
 
     /**
-     * Testa se a funcionalidade de alterar o status booleano 'concluida' funciona pelo ID gerado.
+     * Testa se a atualização de status (pendente, em andamento, concluída) funciona pelo ID gerado.
      */
     @Test
-    public void testMarcarComoConcluida() throws Exception {
+    public void testAtualizarStatus() throws Exception {
         LocalDate data = LocalDate.now().plusDays(1);
         TarefaComPrazo tarefa = new TarefaComPrazo(
                 "Comprar presente", "Shopping", data, 
@@ -148,12 +149,152 @@ public class GerenciadorAgendaTest {
         // Recupera o ID (UUID) que foi gerado automaticamente pela superclasse Atividade
         String idGerado = gerenciador.getListaAtividades().get(0).getId();
         
-        // Invoca o método de conclusão da Controller
-        gerenciador.marcarComoConcluida(idGerado);
+        assertTrue(gerenciador.atualizarStatus(idGerado, Status.EM_ANDAMENTO));
+        assertEquals(Status.EM_ANDAMENTO, gerenciador.getListaAtividades().get(0).getStatus());
 
-        // Afirma que o status da atividade mudou de false para true
+        assertTrue(gerenciador.atualizarStatus(idGerado, Status.CONCLUIDA));
         assertEquals(Status.CONCLUIDA, gerenciador.getListaAtividades().get(0).getStatus(),
-                    "A atividade deveria estar marcada como concluída (true).");
+                    "A atividade deveria estar marcada como concluída.");
+    }
+
+    /**
+     * Atualizar o status de um ID que não existe não deve alterar nada e deve devolver false.
+     */
+    @Test
+    public void testAtualizarStatusComIdInexistente() {
+        assertFalse(gerenciador.atualizarStatus("id-que-nao-existe", Status.CONCLUIDA));
+    }
+
+    /**
+     * Tarefa e evento não concluídos cuja data já passou devem virar EM_ATRASO automaticamente.
+     * (Entram direto na lista porque cadastrarAtividade recusa datas no passado.)
+     */
+    @Test
+    public void testAtividadesVencidasViramAtrasadas() {
+        LocalDate ontem = LocalDate.now().minusDays(1);
+        TarefaComPrazo tarefa = new TarefaComPrazo("Tarefa vencida", "", ontem,
+                Categoria.FACULDADE, Prioridade.ALTA, Status.PENDENTE);
+        EventoComHorario evento = new EventoComHorario("Evento passado", "", ontem,
+                LocalTime.of(10, 0), LocalTime.of(11, 0),
+                Categoria.TRABALHO, Prioridade.MEDIA, Status.EM_ANDAMENTO);
+        gerenciador.getListaAtividades().add(tarefa);
+        gerenciador.getListaAtividades().add(evento);
+
+        assertTrue(gerenciador.atualizarStatusAtrasados(), "Deveria informar que houve mudança.");
+        assertEquals(Status.EM_ATRASO, tarefa.getStatus());
+        assertEquals(Status.EM_ATRASO, evento.getStatus());
+
+        // Rodar de novo não muda mais nada
+        assertFalse(gerenciador.atualizarStatusAtrasados());
+    }
+
+    /**
+     * Atividade concluída não vira atrasada, mesmo com a data no passado; atividade futura também não.
+     */
+    @Test
+    public void testConcluidaEFuturaNaoViramAtrasadas() throws Exception {
+        TarefaComPrazo concluida = new TarefaComPrazo("Já feita", "", LocalDate.now().minusDays(3),
+                Categoria.PESSOAL, Prioridade.BAIXA, Status.CONCLUIDA);
+        gerenciador.getListaAtividades().add(concluida);
+        TarefaComPrazo futura = new TarefaComPrazo("No prazo", "", LocalDate.now().plusDays(3),
+                Categoria.PESSOAL, Prioridade.BAIXA, Status.PENDENTE);
+        gerenciador.cadastrarAtividade(futura);
+        TarefaComPrazo hoje = new TarefaComPrazo("Vence hoje", "", LocalDate.now(),
+                Categoria.PESSOAL, Prioridade.BAIXA, Status.PENDENTE);
+        gerenciador.cadastrarAtividade(hoje);
+
+        assertFalse(gerenciador.atualizarStatusAtrasados());
+        assertEquals(Status.CONCLUIDA, concluida.getStatus());
+        assertEquals(Status.PENDENTE, futura.getStatus());
+        assertEquals(Status.PENDENTE, hoje.getStatus(), "No dia do prazo ainda não está atrasada.");
+    }
+
+    /**
+     * Atualizar nome e prioridade mantém o ID, a data, a categoria, a descrição e o status.
+     */
+    @Test
+    public void testAtualizarNomeEPrioridade() throws Exception {
+        LocalDate data = LocalDate.now().plusDays(2);
+        TarefaComPrazo original = new TarefaComPrazo("Nome antigo", "Detalhes", data,
+                Categoria.FACULDADE, Prioridade.BAIXA, Status.EM_ANDAMENTO);
+        gerenciador.cadastrarAtividade(original);
+
+        TarefaComPrazo nova = new TarefaComPrazo("Nome novo", original.getDescricao(), original.getData(),
+                original.getCategoria(), Prioridade.ALTA, original.getStatus());
+        nova.setId(original.getId());
+        gerenciador.atualizarAtividade(nova);
+
+        assertEquals(1, gerenciador.getListaAtividades().size(), "Não deve duplicar a atividade.");
+        Atividade salva = gerenciador.getListaAtividades().get(0);
+        assertEquals("Nome novo", salva.getTitulo());
+        assertEquals(Prioridade.ALTA, salva.getPrioridade());
+        assertEquals(original.getId(), salva.getId());
+        assertEquals(Status.EM_ANDAMENTO, salva.getStatus());
+        assertEquals(data, salva.getData());
+    }
+
+    /**
+     * Mudar o tipo de tarefa para evento troca a classe do objeto, mantendo o mesmo ID.
+     */
+    @Test
+    public void testAtualizarTipoDeTarefaParaEvento() throws Exception {
+        LocalDate data = LocalDate.now().plusDays(2);
+        TarefaComPrazo tarefa = new TarefaComPrazo("Reunião", "", data,
+                Categoria.TRABALHO, Prioridade.MEDIA, Status.PENDENTE);
+        gerenciador.cadastrarAtividade(tarefa);
+
+        EventoComHorario evento = new EventoComHorario("Reunião", "", data,
+                LocalTime.of(9, 0), LocalTime.of(10, 0),
+                Categoria.TRABALHO, Prioridade.MEDIA, Status.PENDENTE);
+        evento.setId(tarefa.getId());
+        gerenciador.atualizarAtividade(evento);
+
+        Atividade salva = gerenciador.getListaAtividades().get(0);
+        assertTrue(salva instanceof EventoComHorario, "A atividade deveria agora ser um evento.");
+        assertEquals(tarefa.getId(), salva.getId());
+    }
+
+    /**
+     * Atualizar um evento sem mudar o horário não pode acusar conflito com ele mesmo,
+     * mas continua acusando conflito com outro evento.
+     */
+    @Test
+    public void testAtualizarEventoValidaConflitoSemContarOProprioEvento() throws Exception {
+        LocalDate data = LocalDate.now().plusDays(1);
+        EventoComHorario e1 = new EventoComHorario("Aula", "", data,
+                LocalTime.of(14, 0), LocalTime.of(16, 0),
+                Categoria.FACULDADE, Prioridade.ALTA, Status.PENDENTE);
+        EventoComHorario e2 = new EventoComHorario("Academia", "", data,
+                LocalTime.of(18, 0), LocalTime.of(19, 0),
+                Categoria.SAUDE, Prioridade.BAIXA, Status.PENDENTE);
+        gerenciador.cadastrarAtividade(e1);
+        gerenciador.cadastrarAtividade(e2);
+
+        // Só muda o nome do primeiro: não deve dar conflito consigo mesmo
+        EventoComHorario e1Renomeado = new EventoComHorario("Aula de Controle", "", data,
+                e1.getHoraInicio(), e1.getHoraFim(), e1.getCategoria(), e1.getPrioridade(), e1.getStatus());
+        e1Renomeado.setId(e1.getId());
+        gerenciador.atualizarAtividade(e1Renomeado);
+        assertEquals("Aula de Controle", gerenciador.getListaAtividades().get(0).getTitulo());
+
+        // Empurra o primeiro para cima do segundo: deve dar conflito e não alterar nada
+        EventoComHorario e1Conflitante = new EventoComHorario("Aula de Controle", "", data,
+                LocalTime.of(18, 30), LocalTime.of(19, 30),
+                e1.getCategoria(), e1.getPrioridade(), e1.getStatus());
+        e1Conflitante.setId(e1.getId());
+        assertThrows(ConflitoDeHorarioException.class, () -> gerenciador.atualizarAtividade(e1Conflitante));
+        assertEquals(LocalTime.of(14, 0),
+                ((EventoComHorario) gerenciador.getListaAtividades().get(0)).getHoraInicio());
+    }
+
+    /**
+     * Atualizar uma atividade que não existe na lista deve falhar de forma explícita.
+     */
+    @Test
+    public void testAtualizarAtividadeInexistente() {
+        TarefaComPrazo fantasma = new TarefaComPrazo("Fantasma", "", LocalDate.now().plusDays(1),
+                Categoria.PESSOAL, Prioridade.BAIXA, Status.PENDENTE);
+        assertThrows(IllegalArgumentException.class, () -> gerenciador.atualizarAtividade(fantasma));
     }
 
     /**
