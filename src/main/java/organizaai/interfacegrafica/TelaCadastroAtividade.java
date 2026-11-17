@@ -134,6 +134,15 @@ public class TelaCadastroAtividade {
                 } else {
                     LocalTime hrInicio = LocalTime.parse(txtHoraInicio.getText());
                     LocalTime hrFim = LocalTime.parse(txtHoraFim.getText());
+                    
+                    if (hrFim.isBefore(hrInicio)){
+                        mostrarErro("O horário do fim não pode ser antes do horário de início.");
+                        return;
+                    }
+                    if (hrFim.equals(hrInicio)){
+                        mostrarErro("O horário do fim não pode ser ao mesmo tempo do horário de início.");
+                        return;
+                    }
 
                     EventoComHorario novoEvento = new EventoComHorario(
                             txtTitulo.getText(), txtDescricao.getText(), dpData.getValue(),
