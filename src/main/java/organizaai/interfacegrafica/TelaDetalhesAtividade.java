@@ -16,10 +16,11 @@ import organizaai.modelo.Status;
 import organizaai.modelo.TarefaComPrazo;
 
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.Locale;
 
 /**
- * Janela com os detalhes de uma atividade e as ações de concluir e excluir.
+ * Janela com os detalhes de uma atividade e as ações de atualizar status, atualizar e excluir.
  */
 public class TelaDetalhesAtividade {
 
@@ -33,7 +34,7 @@ public class TelaDetalhesAtividade {
 
     /**
      * @param atividade     A atividade que foi clicada no calendário.
-     * @param gerenciador   Para concluir ou excluir a atividade.
+     * @param gerenciador   Para atualizar ou excluir a atividade.
      * @param telaPrincipal Para redesenhar o calendário após a ação.
      */
     public TelaDetalhesAtividade(Atividade atividade, GerenciadorAgenda gerenciador, TelaPrincipal telaPrincipal) {
@@ -69,19 +70,23 @@ public class TelaDetalhesAtividade {
             adicionarLinha(info, linha++, "Horário:", ev.getHoraInicio() + " às " + ev.getHoraFim());
         }
         adicionarLinha(info, linha++, "Prioridade:", rotulo(atividade.getPrioridade()));
-        adicionarLinha(info, linha++, "Status:", rotulo(statusEfetivo()));
+        Label lblStatus = adicionarLinha(info, linha++, "Status:", rotulo(statusEfetivo()));
+        if (statusEfetivo() == Status.EM_ATRASO) {
+            lblStatus.getStyleClass().add("status-atrasado");
+        }
         String desc = atividade.getDescricao();
         if (desc != null && !desc.trim().isEmpty()) {
             adicionarLinha(info, linha++, "Descrição:", desc);
         }
 
         // Botões de ação
-        Button btnConcluir = new Button("Marcar como concluída");
-        btnConcluir.setDisable(atividade.getStatus() == Status.CONCLUIDA);
-        btnConcluir.setOnAction(e -> {
-            gerenciador.marcarComoConcluida(atividade.getId());
-            telaPrincipal.atualizarLista();
-            stage.close();
+        Button btnStatus = new Button("Atualizar status");
+        btnStatus.setOnAction(e -> escolherNovoStatus());
+
+        Button btnAtualizar = new Button("Atualizar");
+        btnAtualizar.setOnAction(e -> {
+            stage.close();   // fecha os detalhes e abre o formulário de edição
+            new TelaAtualizarAtividade(atividade, gerenciador, telaPrincipal).exibir();
         });
 
         Button btnExcluir = new Button("Excluir");
@@ -91,17 +96,42 @@ public class TelaDetalhesAtividade {
         Button btnFechar = new Button("Fechar");
         btnFechar.setOnAction(e -> stage.close());
 
-        HBox botoes = new HBox(10, btnConcluir, btnExcluir, btnFechar);
+        HBox botoes = new HBox(10, btnStatus, btnAtualizar, btnExcluir, btnFechar);
         botoes.setAlignment(Pos.CENTER_RIGHT);
 
         VBox raiz = new VBox(14, lblTitulo, lblCategoria, info, botoes);
         raiz.setPadding(new Insets(20));
-        raiz.setPrefWidth(440);
+        raiz.setPrefWidth(480);
 
         Scene scene = new Scene(raiz);
         scene.getStylesheets().add(TelaPrincipal.caminhoCss());
         stage.setScene(scene);
         stage.showAndWait();
+    }
+
+    /**
+     * Abre uma caixa para escolher o novo status (pendente, em andamento ou concluída)
+     * e aplica a escolha. "Atrasado" não é opção: é definido automaticamente pelo sistema.
+     */
+    private void escolherNovoStatus() {
+        Status atual = atividade.getStatus();
+        // Se está atrasada, sugere "Pendente" como ponto de partida, pois "Atrasado" não é escolhível
+        Status sugerido = (atual == Status.EM_ATRASO) ? Status.PENDENTE : atual;
+
+        ChoiceDialog<Status> dialogo = new ChoiceDialog<>(sugerido,
+                Arrays.asList(Status.PENDENTE, Status.EM_ANDAMENTO, Status.CONCLUIDA));
+        dialogo.initOwner(stage);
+        dialogo.setTitle("Atualizar status");
+        dialogo.setHeaderText(atividade.getTitulo());
+        dialogo.setContentText(atividade.estaEmAtraso()
+                ? "Novo status (se o prazo já passou e a atividade não for concluída, ela volta a ficar atrasada):"
+                : "Novo status:");
+
+        dialogo.showAndWait().ifPresent(novoStatus -> {
+            gerenciador.atualizarStatus(atividade.getId(), novoStatus);
+            telaPrincipal.atualizarLista();
+            stage.close();
+        });
     }
 
     /** Pede confirmação antes de apagar, pois a exclusão não tem desfazer. */
@@ -120,15 +150,12 @@ public class TelaDetalhesAtividade {
         });
     }
 
-    /** Status mostrado ao usuário: tarefa vencida e não concluída aparece como EM_ATRASO. */
+    /** Status mostrado ao usuário: atividade vencida e não concluída aparece como EM_ATRASO. */
     private Status statusEfetivo() {
-        if (atividade instanceof TarefaComPrazo && ((TarefaComPrazo) atividade).estaEmAtraso()) {
-            return Status.EM_ATRASO;
-        }
-        return atividade.getStatus();
+        return atividade.estaEmAtraso() ? Status.EM_ATRASO : atividade.getStatus();
     }
 
-    private void adicionarLinha(GridPane grid, int linha, String nome, String valor) {
+    private Label adicionarLinha(GridPane grid, int linha, String nome, String valor) {
         Label lblNome = new Label(nome);
         lblNome.getStyleClass().add("detalhe-rotulo");
         Label lblValor = new Label(valor);
@@ -136,6 +163,7 @@ public class TelaDetalhesAtividade {
         lblValor.setMaxWidth(300);
         grid.add(lblNome, 0, linha);
         grid.add(lblValor, 1, linha);
+        return lblValor;
     }
 
     /** Converte o nome do enum em texto amigável (com acentos). */
@@ -144,7 +172,7 @@ public class TelaDetalhesAtividade {
             case "EM_ANDAMENTO":
                 return "Em andamento";
             case "EM_ATRASO":
-                return "Em atraso";
+                return "Atrasado";
             case "CONCLUIDA":
                 return "Concluída";
             case "SAUDE":
