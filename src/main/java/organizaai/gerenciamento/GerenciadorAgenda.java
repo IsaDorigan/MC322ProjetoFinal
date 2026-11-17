@@ -34,6 +34,8 @@ public class GerenciadorAgenda {
         this.gerenciadorArquivo = new GerenciadorArquivoXML();
         this.estrategiaOrdenacao = new OrdenacaoPorData(); 
         this.listaAtividades = gerenciadorArquivo.carregarAgenda(CAMINHO_ARQUIVO);
+        // Atividades que venceram enquanto o programa estava fechado já abrem como atrasadas
+        atualizarStatusAtrasados();
     }
 
     /**
@@ -90,17 +92,59 @@ public class GerenciadorAgenda {
     }
 
     /**
-     * Altera o status de uma atividade específica para concluída.
+     * Altera o status de uma atividade específica (pendente, em andamento ou concluída).
      * 
-     * @param id O identificador único da atividade.
+     * @param id         O identificador único da atividade.
+     * @param novoStatus O novo status escolhido pelo usuário.
+     * @return true se a atividade foi encontrada e atualizada, false caso contrário
      */
-    public void marcarComoConcluida(String id) {
+    public boolean atualizarStatus(String id, Status novoStatus) {
         for (Atividade atv : listaAtividades) {
             if (atv.getId().equals(id)) {
-                atv.setStatus(Status.CONCLUIDA);
-                break;
+                atv.setStatus(novoStatus);
+                return true;
             }
         }
+        return false;
+    }
+
+    /**
+     * Marca como EM_ATRASO toda atividade que não foi concluída e cuja data (prazo da tarefa
+     * ou dia do evento) já passou. É chamado ao abrir o programa e a cada redesenho do calendário.
+     * 
+     * @return true se alguma atividade mudou de status, false caso contrário
+     */
+    public boolean atualizarStatusAtrasados() {
+        boolean houveMudanca = false;
+        for (Atividade atv : listaAtividades) {
+            if (atv.estaEmAtraso() && atv.getStatus() != Status.EM_ATRASO) {
+                atv.setStatus(Status.EM_ATRASO);
+                houveMudanca = true;
+            }
+        }
+        return houveMudanca;
+    }
+
+    /**
+     * Substitui uma atividade existente pela versão atualizada (mesmo ID), mantendo a posição na lista.
+     * Como o tipo (tarefa/evento) é a classe do objeto, mudar o tipo significa trocar o objeto inteiro.
+     * A data não é revalidada, pois quem atualiza uma atividade antiga não deve ser barrado por ela já ter passado.
+     * 
+     * @param atualizada A atividade com os novos dados e o mesmo ID da original.
+     * @throws ConflitoDeHorarioException Se a versão atualizada for um evento que bate com o horário de outro evento.
+     * @throws IllegalArgumentException Se não existir atividade com esse ID.
+     */
+    public void atualizarAtividade(Atividade atualizada) throws ConflitoDeHorarioException {
+        for (int i = 0; i < listaAtividades.size(); i++) {
+            if (listaAtividades.get(i).getId().equals(atualizada.getId())) {
+                if (atualizada instanceof EventoComHorario) {
+                    validarConflitoDeHorario((EventoComHorario) atualizada);
+                }
+                listaAtividades.set(i, atualizada);
+                return;
+            }
+        }
+        throw new IllegalArgumentException("Atividade não encontrada: " + atualizada.getId());
     }
 
     /**
@@ -121,7 +165,8 @@ public class GerenciadorAgenda {
 
     private void validarConflitoDeHorario(EventoComHorario novoEvento) throws ConflitoDeHorarioException {
         for (Atividade atv : listaAtividades) {
-            if (atv instanceof EventoComHorario) {
+            // O próprio evento (mesmo ID) não conta como conflito: acontece ao atualizar um evento já cadastrado
+            if (atv instanceof EventoComHorario && !atv.getId().equals(novoEvento.getId())) {
                 EventoComHorario eventoExistente = (EventoComHorario) atv;
                 
                 if (eventoExistente.getData().equals(novoEvento.getData())) {
