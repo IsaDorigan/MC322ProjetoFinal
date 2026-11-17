@@ -127,6 +127,14 @@ public class TelaAtualizarAtividade {
             try {
                 horaInicio = LocalTime.parse(textoInicio.trim());
                 horaFim = LocalTime.parse(textoFim.trim());
+                if (horaFim.isBefore(horaInicio)){
+                    mostrarErro("O horário do fim não pode ser antes do horário de início.");
+                    return;
+                }
+                if (horaFim.equals(horaInicio)){
+                    mostrarErro("O horário do fim não pode ser ao mesmo tempo do horário de início.");
+                    return;
+                }
             } catch (Exception ex) {
                 mostrarErro("Formato de horário inválido. Use HH:mm (Ex: 08:30).");
                 return;
