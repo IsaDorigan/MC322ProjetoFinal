@@ -1,16 +1,19 @@
 package organizaai.interfacegrafica;
 
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
+import javafx.util.Duration;
 
 import organizaai.gerenciamento.GerenciadorAgenda;
 import organizaai.modelo.Atividade;
 import organizaai.modelo.EventoComHorario;
 import organizaai.modelo.Status;
-import organizaai.modelo.TarefaComPrazo;
 import organizaai.strategy.OrdenacaoPorCategoria;
 import organizaai.strategy.OrdenacaoPorData;
 import organizaai.strategy.OrdenacaoPorPrioridade;
@@ -63,6 +66,21 @@ public class TelaPrincipal {
 
         inicializarComponentes();
         atualizarLista();
+        iniciarVerificacaoDeAtrasos();
+    }
+
+    /**
+     * A cada minuto confere se alguma atividade passou do prazo com o programa aberto
+     * (por exemplo, na virada do dia) e, se sim, redesenha o calendário.
+     */
+    private void iniciarVerificacaoDeAtrasos() {
+        Timeline verificacao = new Timeline(new KeyFrame(Duration.minutes(1), e -> {
+            if (gerenciador.atualizarStatusAtrasados()) {
+                atualizarLista();
+            }
+        }));
+        verificacao.setCycleCount(Animation.INDEFINITE);
+        verificacao.play();
     }
 
     /**
@@ -159,6 +177,9 @@ public class TelaPrincipal {
      * Consulta as atividades no gerenciadore atualiza a interface gráfica.
      */
     public void atualizarLista() {
+        // Antes de desenhar, marca como atrasadas as atividades que venceram e não foram concluídas
+        gerenciador.atualizarStatusAtrasados();
+
         gridCalendario.getChildren().clear();
         gridCalendario.getColumnConstraints().clear();
         gridCalendario.getRowConstraints().clear();
@@ -331,8 +352,8 @@ public class TelaPrincipal {
                 "etiqueta-" + atv.getCategoria().name().toLowerCase(Locale.ROOT));
         if (detalhada) etiqueta.getStyleClass().add("etiqueta-detalhada");
         if (atv.getStatus() == Status.CONCLUIDA) etiqueta.getStyleClass().add("concluida");
-        if (atv instanceof TarefaComPrazo && ((TarefaComPrazo) atv).estaEmAtraso()) {
-            etiqueta.getStyleClass().add("atrasada");
+        if (atv.estaEmAtraso()) {
+            etiqueta.getStyleClass().add("atrasada");   // fica vermelha (ver calendario.css)
         }
 
         etiqueta.setTooltip(new Tooltip(atv.exibirDetalhes()));
