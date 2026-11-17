@@ -165,10 +165,6 @@ public class TelaCadastroAtividade {
      * @param mensagem A mensagem da exceção a ser mostrada.
      */
     private void mostrarErro(String mensagem) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Erro de Validação");
-        alert.setHeaderText("Não foi possível cadastrar a atividade");
-        alert.setContentText(mensagem);
-        alert.showAndWait();
+        Dialogos.mostrarErro("Erro de Validação", "Não foi possível cadastrar a atividade", mensagem);
     }
 }
