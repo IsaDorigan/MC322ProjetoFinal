@@ -134,6 +134,61 @@ public class GerenciadorAgendaTest {
     }
 
     /**
+     * Testa se aceita a adição dois eventos em horarios consecutivos
+     */
+    @Test
+    public void testEventosEmHorariosConsecutivos() throws DataInvalidaException, ConflitoDeHorarioException {
+        LocalDate data = LocalDate.now().plusDays(1);
+        
+        // Primeiro evento: das 14:00 às 15:00
+        EventoComHorario evento1 = new EventoComHorario(
+                "Reunião de Grupo", "Discussão do Projeto", data,
+                LocalTime.of(14, 0), LocalTime.of(15, 0),
+                Categoria.FACULDADE, Prioridade.ALTA, Status.PENDENTE
+        );
+
+        // Segundo evento: das 15:00 às 16:00
+        EventoComHorario evento2 = new EventoComHorario(
+                "Consultoria CCU", "Workshop", data,
+                LocalTime.of(15, 0), LocalTime.of(16, 0),
+                Categoria.TRABALHO, Prioridade.MEDIA, Status.PENDENTE
+        );
+
+        gerenciador.cadastrarAtividade(evento1);
+        gerenciador.cadastrarAtividade(evento2);
+
+        assertEquals(2, gerenciador.getListaAtividades().size(), "A lista deve conter ambos os eventos.");
+    }
+
+    /**
+     * Testa se aceita adição de eventos no mesmo horário, porém em dias diferentes
+     */
+    @Test
+    public void testEventosNoMesmoHorarioEmDiasDiferentes() throws DataInvalidaException, ConflitoDeHorarioException {
+        LocalDate data1 = LocalDate.now().plusDays(1);
+        LocalDate data2 = LocalDate.now().plusDays(2);
+        
+        // Primeiro evento: das 14:00 às 15:00
+        EventoComHorario evento1 = new EventoComHorario(
+                "Reunião de Grupo", "Discussão do Projeto", data1,
+                LocalTime.of(14, 0), LocalTime.of(15, 0),
+                Categoria.FACULDADE, Prioridade.ALTA, Status.PENDENTE
+        );
+
+        // Segundo evento: das 14:00 às 15:00 do dia seguinte
+        EventoComHorario evento2 = new EventoComHorario(
+                "Consultoria CCU", "Workshop", data2,
+                LocalTime.of(14, 0), LocalTime.of(15, 0),
+                Categoria.TRABALHO, Prioridade.MEDIA, Status.PENDENTE
+        );
+
+        gerenciador.cadastrarAtividade(evento1);
+        gerenciador.cadastrarAtividade(evento2);
+
+        assertEquals(2, gerenciador.getListaAtividades().size(), "A lista deve conter ambos os eventos.");
+    }
+
+    /**
      * Testa se a atualização de status (pendente, em andamento, concluída) funciona pelo ID gerado.
      */
     @Test
@@ -319,5 +374,13 @@ public class GerenciadorAgendaTest {
         // Verifica se o método retornou true e se a lista ficou vazia
         assertTrue(removido, "O método deve retornar true ao encontrar e remover a atividade.");
         assertEquals(0, gerenciador.getListaAtividades().size(), "A lista deve ficar vazia após a exclusão.");
+    }
+
+    /**
+     * Excluir uma atividade que não existe na lista deve falhar de forma explícita.
+     */
+    @Test
+    public void testExcluirAtividadeInexistente() throws Exception {
+        assertFalse(gerenciador.excluirAtividade("id-que-nao-existe"));
     }
 }
