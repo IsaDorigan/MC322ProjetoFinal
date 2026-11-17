@@ -51,7 +51,8 @@ public class EventoComHorario extends Atividade {
      */
     @Override
     public String exibirDetalhes() {
+        Status statusExibido = estaEmAtraso() ? Status.EM_ATRASO : getStatus();
         return String.format("[EVENTO] %s - %s das %s às %s | Categoria: %s | Status: %s", 
-                getTitulo(), getData().toString(), horaInicio.toString(), horaFim.toString(), getCategoria(), getStatus());
+                getTitulo(), getData().toString(), horaInicio.toString(), horaFim.toString(), getCategoria(), statusExibido);
     }
 }
