@@ -23,14 +23,6 @@ public class TarefaComPrazo extends Atividade {
     }
 
     /**
-     * Verifica se a tarefa está atrasada e não foi concluída ainda
-     * @return true se tiver em atraso, false caso contrário
-     */
-    public boolean estaEmAtraso(){
-        return LocalDate.now().isAfter(getData()) && getStatus() != Status.CONCLUIDA;
-    }
-
-    /**
      * Retorna os detalhes formatados especificamente para uma Tarefa.
      * 
      * @return String com os dados da Tarefa.
