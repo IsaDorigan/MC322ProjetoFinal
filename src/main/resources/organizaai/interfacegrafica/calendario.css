@@ -113,9 +113,8 @@
 /* Modificadores de status */
 .etiqueta.concluida { -fx-opacity: 0.5; }
 .etiqueta.atrasada {
-    -fx-border-color: #d93025;
-    -fx-border-width: 2;
-    -fx-border-radius: 4;
+    -fx-background-color: #d93025;   /* vermelho: sobrescreve a cor da categoria */
+    -fx-text-fill: white;
 }
 
 /* Etiqueta grande (visão Dia) */
@@ -138,3 +137,4 @@
 .painel-dia { -fx-padding: 12; }
 .detalhe-titulo { -fx-font-size: 18px; -fx-font-weight: bold; }
 .detalhe-rotulo { -fx-text-fill: #5f6368; -fx-font-weight: bold; }
+.status-atrasado { -fx-text-fill: #d93025; -fx-font-weight: bold; }
