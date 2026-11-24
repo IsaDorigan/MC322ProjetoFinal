@@ -84,10 +84,9 @@ public class TelaDetalhesAtividade {
         btnStatus.setOnAction(e -> escolherNovoStatus());
 
         Button btnAtualizar = new Button("Atualizar");
-        btnAtualizar.setOnAction(e -> {
-            stage.close();   // fecha os detalhes e abre o formulário de edição
-            new TelaAtualizarAtividade(atividade, gerenciador, telaPrincipal).exibir();
-        });
+        // O formulário de edição reaproveita esta mesma janela (já ativa), sem abrir outra
+        btnAtualizar.setOnAction(e ->
+                new TelaAtualizarAtividade(atividade, gerenciador, telaPrincipal, stage).exibir());
 
         Button btnExcluir = new Button("Excluir");
         btnExcluir.getStyleClass().add("botao-perigo");
