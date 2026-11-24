@@ -7,7 +7,6 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
 import organizaai.excecoes.ConflitoDeHorarioException;
 import organizaai.gerenciamento.GerenciadorAgenda;
@@ -36,17 +35,18 @@ public class TelaAtualizarAtividade {
      * @param atividade     A atividade que será atualizada.
      * @param gerenciador   Para gravar a versão atualizada.
      * @param telaPrincipal Para redesenhar o calendário depois de salvar.
+     * @param stage         A janela que já está aberta (a dos detalhes): o formulário
+     *                      troca o conteúdo dela em vez de abrir uma janela nova.
      */
-    public TelaAtualizarAtividade(Atividade atividade, GerenciadorAgenda gerenciador, TelaPrincipal telaPrincipal) {
+    public TelaAtualizarAtividade(Atividade atividade, GerenciadorAgenda gerenciador,
+                                  TelaPrincipal telaPrincipal, Stage stage) {
         this.atividade = atividade;
         this.gerenciador = gerenciador;
         this.telaPrincipal = telaPrincipal;
-        this.stage = new Stage();
-        stage.initModality(Modality.APPLICATION_MODAL);
-        stage.setTitle("Atualizar Atividade");
+        this.stage = stage;
     }
 
-    /** Desenha o formulário já preenchido com os dados atuais e o exibe. */
+    /** Desenha o formulário já preenchido com os dados atuais na janela recebida. */
     public void exibir() {
         boolean ehEvento = atividade instanceof EventoComHorario;
 
@@ -106,8 +106,10 @@ public class TelaAtualizarAtividade {
 
         Scene scene = new Scene(grid, 400, 330);
         scene.getStylesheets().add(TelaPrincipal.caminhoCss());
+        stage.setTitle("Atualizar Atividade");
         stage.setScene(scene);
-        stage.showAndWait();
+        stage.sizeToScene();   // a janela dos detalhes tinha outro tamanho
+        txtTitulo.requestFocus();
     }
 
     /**
@@ -127,14 +129,6 @@ public class TelaAtualizarAtividade {
             try {
                 horaInicio = LocalTime.parse(textoInicio.trim());
                 horaFim = LocalTime.parse(textoFim.trim());
-                if (horaFim.isBefore(horaInicio)){
-                    mostrarErro("O horário do fim não pode ser antes do horário de início.");
-                    return;
-                }
-                if (horaFim.equals(horaInicio)){
-                    mostrarErro("O horário do fim não pode ser ao mesmo tempo do horário de início.");
-                    return;
-                }
             } catch (Exception ex) {
                 mostrarErro("Formato de horário inválido. Use HH:mm (Ex: 08:30).");
                 return;
