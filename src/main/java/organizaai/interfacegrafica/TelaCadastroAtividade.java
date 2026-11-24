@@ -9,6 +9,7 @@ import javafx.stage.Stage;
 import organizaai.excecoes.ConflitoDeHorarioException;
 import organizaai.excecoes.DataInvalidaException;
 import organizaai.gerenciamento.GerenciadorAgenda;
+import organizaai.modelo.CampoData;
 import organizaai.modelo.Categoria;
 import organizaai.modelo.EventoComHorario;
 import organizaai.modelo.Prioridade;
@@ -17,6 +18,7 @@ import organizaai.modelo.Status;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.format.DateTimeParseException;
 
 /**
  * Tela para cadastrar uma nova atividade
@@ -69,7 +71,7 @@ public class TelaCadastroAtividade {
 
         TextField txtTitulo = new TextField();
         TextField txtDescricao = new TextField();
-        DatePicker dpData = new DatePicker(dataInicial);
+        DatePicker dpData = CampoData.criar(dataInicial);
         
         ComboBox<Categoria> comboCategoria = new ComboBox<>();
         comboCategoria.getItems().addAll(Categoria.values());
@@ -118,7 +120,15 @@ public class TelaCadastroAtividade {
                     mostrarErro("O título não pode estar vazio.");
                     return;
                 }
-                if (dpData.getValue() == null) {
+                // Lê o texto do campo (e não só getValue()), para valer o que foi digitado
+                LocalDate data;
+                try {
+                    data = CampoData.ler(dpData);
+                } catch (DateTimeParseException ex) {
+                    mostrarErro("Data inválida. Use o formato dd/mm/aaaa (Ex: 25/12/2026).");
+                    return;
+                }
+                if (data == null) {
                     mostrarErro("Escolha uma data.");
                     return;
                 }
@@ -126,7 +136,7 @@ public class TelaCadastroAtividade {
                 // Criação polimórfica baseada na escolha
                 if (comboTipo.getValue().equals("Tarefa com Prazo")) {
                     TarefaComPrazo novaTarefa = new TarefaComPrazo(
-                            txtTitulo.getText(), txtDescricao.getText(), dpData.getValue(), 
+                            txtTitulo.getText(), txtDescricao.getText(), data, 
                             comboCategoria.getValue(), comboPrioridade.getValue(), Status.PENDENTE
                     );
                     gerenciador.cadastrarAtividade(novaTarefa); // Pode lançar DataInvalidaException
@@ -145,7 +155,7 @@ public class TelaCadastroAtividade {
                     }
 
                     EventoComHorario novoEvento = new EventoComHorario(
-                            txtTitulo.getText(), txtDescricao.getText(), dpData.getValue(),
+                            txtTitulo.getText(), txtDescricao.getText(), data,
                             hrInicio, hrFim, comboCategoria.getValue(), comboPrioridade.getValue(), Status.PENDENTE
                     );
                     gerenciador.cadastrarAtividade(novoEvento); // Pode lançar Data/Conflito Exceptions
@@ -156,7 +166,7 @@ public class TelaCadastroAtividade {
 
             } catch (DataInvalidaException | ConflitoDeHorarioException ex) {
                 mostrarErro(ex.getMessage());
-            } catch (Exception ex) {
+            } catch (DateTimeParseException ex) {
                 mostrarErro("Formato de horário inválido. Use HH:mm (Ex: 08:30).");
             }
         });
