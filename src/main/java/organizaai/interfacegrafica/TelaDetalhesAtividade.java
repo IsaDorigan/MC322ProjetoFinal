@@ -34,7 +34,7 @@ public class TelaDetalhesAtividade {
 
     /**
      * @param atividade     A atividade que foi clicada no calendário.
-     * @param gerenciador   Para atualizar ou excluir a atividade.
+     * @param gerenciador   Para editar ou excluir a atividade.
      * @param telaPrincipal Para redesenhar o calendário após a ação.
      */
     public TelaDetalhesAtividade(Atividade atividade, GerenciadorAgenda gerenciador, TelaPrincipal telaPrincipal) {
@@ -83,9 +83,9 @@ public class TelaDetalhesAtividade {
         Button btnStatus = new Button("Atualizar status");
         btnStatus.setOnAction(e -> escolherNovoStatus());
 
-        Button btnAtualizar = new Button("Atualizar");
+        Button btnEditar = new Button("Editar");
         // O formulário de edição reaproveita esta mesma janela (já ativa), sem abrir outra
-        btnAtualizar.setOnAction(e ->
+        btnEditar.setOnAction(e ->
                 new TelaAtualizarAtividade(atividade, gerenciador, telaPrincipal, stage).exibir());
 
         Button btnExcluir = new Button("Excluir");
@@ -95,7 +95,7 @@ public class TelaDetalhesAtividade {
         Button btnFechar = new Button("Fechar");
         btnFechar.setOnAction(e -> stage.close());
 
-        HBox botoes = new HBox(10, btnStatus, btnAtualizar, btnExcluir, btnFechar);
+        HBox botoes = new HBox(10, btnStatus, btnEditar, btnExcluir, btnFechar);
         botoes.setAlignment(Pos.CENTER_RIGHT);
 
         VBox raiz = new VBox(14, lblTitulo, lblCategoria, info, botoes);
