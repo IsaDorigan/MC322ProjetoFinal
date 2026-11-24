@@ -18,7 +18,7 @@ import organizaai.modelo.TarefaComPrazo;
 import java.time.LocalTime;
 
 /**
- * Tela para atualizar o nome, a prioridade e o tipo de uma atividade já cadastrada.
+ * Tela para editar o nome, a prioridade e o tipo de uma atividade já cadastrada.
  * Os demais dados (data, categoria, descrição e status) são mantidos.
  */
 public class TelaAtualizarAtividade {
@@ -32,11 +32,9 @@ public class TelaAtualizarAtividade {
     private final Stage stage;
 
     /**
-     * @param atividade     A atividade que será atualizada.
-     * @param gerenciador   Para gravar a versão atualizada.
+     * @param atividade     A atividade que será editada.
+     * @param gerenciador   Para gravar a versão editada.
      * @param telaPrincipal Para redesenhar o calendário depois de salvar.
-     * @param stage         A janela que já está aberta (a dos detalhes): o formulário
-     *                      troca o conteúdo dela em vez de abrir uma janela nova.
      */
     public TelaAtualizarAtividade(Atividade atividade, GerenciadorAgenda gerenciador,
                                   TelaPrincipal telaPrincipal, Stage stage) {
@@ -46,7 +44,7 @@ public class TelaAtualizarAtividade {
         this.stage = stage;
     }
 
-    /** Desenha o formulário já preenchido com os dados atuais na janela recebida. */
+    /** Desenha o formulário já preenchido com os dados atuais e o exibe. */
     public void exibir() {
         boolean ehEvento = atividade instanceof EventoComHorario;
 
@@ -106,14 +104,14 @@ public class TelaAtualizarAtividade {
 
         Scene scene = new Scene(grid, 400, 330);
         scene.getStylesheets().add(TelaPrincipal.caminhoCss());
-        stage.setTitle("Atualizar Atividade");
+        stage.setTitle("Editar Atividade");
         stage.setScene(scene);
         stage.sizeToScene();   // a janela dos detalhes tinha outro tamanho
         txtTitulo.requestFocus();
     }
 
     /**
-     * Valida os campos, monta a atividade atualizada (mesmo ID, data, categoria, descrição e status)
+     * Valida os campos, monta a atividade editada (mesmo ID, data, categoria, descrição e status)
      * e a entrega ao gerenciador.
      */
     private void salvar(String tipo, String titulo, Prioridade prioridade, String textoInicio, String textoFim) {
@@ -129,6 +127,14 @@ public class TelaAtualizarAtividade {
             try {
                 horaInicio = LocalTime.parse(textoInicio.trim());
                 horaFim = LocalTime.parse(textoFim.trim());
+                if (horaFim.isBefore(horaInicio)){
+                    mostrarErro("O horário do fim não pode ser antes do horário de início.");
+                    return;
+                }
+                if (horaFim.equals(horaInicio)){
+                    mostrarErro("O horário do fim não pode ser ao mesmo tempo do horário de início.");
+                    return;
+                }
             } catch (Exception ex) {
                 mostrarErro("Formato de horário inválido. Use HH:mm (Ex: 08:30).");
                 return;
@@ -153,6 +159,6 @@ public class TelaAtualizarAtividade {
     }
 
     private void mostrarErro(String mensagem) {
-        Dialogos.mostrarErro("Erro de Validação", "Não foi possível atualizar a atividade", mensagem);
+        Dialogos.mostrarErro("Erro de Validação", "Não foi possível editar a atividade", mensagem);
     }
 }
